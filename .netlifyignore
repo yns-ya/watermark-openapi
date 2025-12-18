@@ -1,0 +1,22 @@
+# Reduce upload size for Netlify
+# Ignore docs except the minimal ones we keep
+*.md
+!README.md
+!DEPLOYMENT.md
+!SECURITY.md
+
+# Ignore tests and examples
+/test/
+/tests/
+/example/
+/examples/
+
+# Ignore CI and misc
+.github/
+.vscode/
+.editorconfig
+.eslintrc*
+.prettier*
+
+# Keep source, netlify functions, configs, package manifests
+# Netlify will still use package.json and lock files

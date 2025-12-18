@@ -1,61 +1,54 @@
-# Netlify Configuration for Watermark API
-# Stateless image processing - NO STORAGE
-
 [build]
-  command = "pnpm install && (pnpm run build || true) && mkdir -p public"
-  functions = "netlify/functions"
+  # Install only production deps; rely on Netlify Functions bundler (esbuild) to transpile TS.
+  command = "pnpm install"
   publish = "public"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--version" # Disable npm
-  PNPM_VERSION = "9.0.0"
+  # For pnpm, use PNPM_FLAGS. Skip optional native addons and dev deps.
+  PNPM_FLAGS = "--prod --no-optional"
+
 
 [functions]
-  # Use esbuild for faster builds and smaller bundles
   node_bundler = "esbuild"
-
-  # External node modules (bundled but not tree-shaken)
   external_node_modules = ["sharp"]
+  included_files = ["src/assets/**/*"]
 
-# Function-specific settings
-[functions.watermark]
-  # Max execution time for Free tier
-  timeout = 10
+# Context-specific environment overrides
+[context.production.environment]
+  NODE_ENV = "production"
+  # It's recommended to set JWT_SECRET in Netlify UI, not here
+  MAX_FILE_SIZE = "6291456"        # 6MB (Netlify free tier limit)
+  MAX_IMAGE_WIDTH = "4096"
+  MAX_IMAGE_HEIGHT = "4096"
 
-  # Memory allocation
-  memory = 1024
+[context.deploy-preview.environment]
+  NODE_ENV = "preview"
+  MAX_FILE_SIZE = "6291456"
+  MAX_IMAGE_WIDTH = "4096"
+  MAX_IMAGE_HEIGHT = "4096"
 
-# Redirects for cleaner URLs (optional)
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
+  MAX_FILE_SIZE = "6291456"
+  MAX_IMAGE_WIDTH = "4096"
+  MAX_IMAGE_HEIGHT = "4096"
+
 [[redirects]]
-  from = "/api/watermark"
-  to = "/.netlify/functions/watermark"
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
-  force = false
 
-# Security headers
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-# Cache control for function responses
-# NOTE: Actual Cache-Control is set in function code
-[[headers]]
-  for = "/.netlify/functions/watermark"
-  [headers.values]
-    # These are fallback headers
-    # Function response headers take precedence
-    Cache-Control = "no-store, no-cache, must-revalidate"
-    Pragma = "no-cache"
-
-# Development settings
 [dev]
-  command = "npm run dev"
-  port = 8888
-  targetPort = 8888
+  command = "pnpm start:dev"
+  port = 3000
+  publish = "public"
   autoLaunch = false
+
+# Environment variables (set in Netlify UI)
+# JWT_SECRET=your-secret-key
+# ALLOWED_ORIGINS=https://yourdomain.com
+# MAX_FILE_SIZE=6291456
+# MAX_IMAGE_WIDTH=4096
+# MAX_IMAGE_HEIGHT=4096
