@@ -675,6 +675,261 @@ URL.revokeObjectURL(url); // ✅
 
 ---
 
+## Frontend AI Prompt
+
+**Copy this prompt and give it to your frontend AI assistant (Cursor, Claude, GitHub Copilot, etc.):**
+
+---
+
+```
+I need to integrate with a watermarking API. Build a complete integration following these exact requirements:
+
+# API Configuration
+Endpoint: POST https://silly-seahorse-49d00d.netlify.app/.netlify/functions/watermark
+Authentication: JWT Bearer token (stored in env variable)
+Request Type: multipart/form-data
+Response Type: Binary image data (blob)
+
+# Form Data Structure
+```javascript
+const formData = new FormData();
+
+// Required fields
+formData.append('image', fileObject); // File from <input type="file">
+formData.append('type', 'text'); // or 'image'
+
+// ⚠️ CRITICAL: frequency MUST be JSON.stringify(), NOT a plain object
+formData.append('frequency', JSON.stringify({
+  mode: 'diagonal_tile',  // or 'single', 'grid'
+  spacing_px: 280
+}));
+
+// For text watermark (when type='text')
+formData.append('text', '© Copyright 2025');
+formData.append('font', 'NotoSansThai'); // or 'Roboto', 'Inter'
+formData.append('font_size', '32');
+formData.append('color', '#FFFFFF');
+
+// For image watermark (when type='image')
+formData.append('wm_image', watermarkFileObject);
+formData.append('wm_scale', '0.2');
+
+// Optional styling (both types)
+formData.append('opacity', '0.2');
+formData.append('angle_deg', '-30');
+formData.append('output_format', 'png'); // or 'jpeg', 'webp'
+formData.append('quality', '90'); // for jpeg/webp
+```
+
+# Request Implementation
+```javascript
+const response = await fetch(
+  'https://silly-seahorse-49d00d.netlify.app/.netlify/functions/watermark',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_JWT_TOKEN}`
+    },
+    body: formData // Don't set Content-Type, browser handles it
+  }
+);
+```
+
+# Response Handling
+```javascript
+// ⚠️ Success response is BINARY (blob), NOT JSON
+if (response.ok) {
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+
+  // Display image
+  imageElement.src = url;
+
+  // Or download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'watermarked.png';
+  a.click();
+
+  // ⚠️ CRITICAL: Always cleanup to prevent memory leaks
+  URL.revokeObjectURL(url);
+}
+
+// Errors return JSON
+if (!response.ok) {
+  const error = await response.json();
+
+  switch (response.status) {
+    case 400: // Bad request
+      alert(`Invalid input: ${error.message}`);
+      break;
+    case 401: // Unauthorized
+      alert('Authentication failed');
+      // Redirect to login
+      break;
+    case 413: // File too large
+      alert('Image must be less than 6MB');
+      break;
+    case 415: // Unsupported file type
+      alert('Use JPG, PNG, or WebP only');
+      break;
+    case 429: // Rate limit
+      alert('Too many requests. Please wait.');
+      // Implement retry with exponential backoff
+      break;
+    case 500: // Server error
+      alert('Processing failed. Please try again.');
+      break;
+  }
+}
+```
+
+# Critical Validation Rules (MUST IMPLEMENT)
+
+## Before Upload:
+1. File size: MAX 6MB
+   ```javascript
+   if (file.size > 6 * 1024 * 1024) {
+     throw new Error('Image must be less than 6MB');
+   }
+   ```
+
+2. File type: JPG, PNG, WebP only
+   ```javascript
+   const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+   if (!allowed.includes(file.type)) {
+     throw new Error('Invalid file type');
+   }
+   ```
+
+3. Text length: MAX 200 characters
+   ```javascript
+   if (text.length > 200) {
+     throw new Error('Text too long (max 200 chars)');
+   }
+   ```
+
+4. Thai text: MUST use 'NotoSansThai' font
+   ```javascript
+   if (text.includes('ก-๙')) { // Thai characters
+     font = 'NotoSansThai';
+   }
+   ```
+
+# Common Mistakes to AVOID
+
+❌ WRONG: formData.append('frequency', { mode: 'grid' })
+✅ RIGHT: formData.append('frequency', JSON.stringify({ mode: 'grid' }))
+
+❌ WRONG: const data = await response.json()
+✅ RIGHT: const blob = await response.blob()
+
+❌ WRONG: No Authorization header
+✅ RIGHT: headers: { 'Authorization': `Bearer ${token}` }
+
+❌ WRONG: Never calling URL.revokeObjectURL()
+✅ RIGHT: Always revoke when done: URL.revokeObjectURL(url)
+
+❌ WRONG: Thai text with 'Roboto' font
+✅ RIGHT: Thai text with 'NotoSansThai' font
+
+# UX Requirements
+
+1. Show file size/type validation BEFORE upload
+2. Display loading indicator (processing takes 2-8 seconds)
+3. Show character counter for text watermarks (max 200)
+4. Implement rate limit handling (429 error → retry with backoff)
+5. Always cleanup object URLs to prevent memory leaks
+6. Display helpful error messages for all error codes
+
+# React Hook Example Pattern
+
+Please create a custom hook like this:
+
+```typescript
+import { useState } from 'react';
+
+function useWatermark() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const addWatermark = async (file: File, options: WatermarkOptions) => {
+    // Validate
+    if (file.size > 6 * 1024 * 1024) {
+      throw new Error('File too large');
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('type', options.type);
+      formData.append('frequency', JSON.stringify(options.frequency));
+
+      // Add other fields based on options...
+
+      const response = await fetch(
+        'https://silly-seahorse-49d00d.netlify.app/.netlify/functions/watermark',
+        {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+
+      return await response.blob();
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { addWatermark, loading, error };
+}
+```
+
+# Performance Considerations
+
+- Expected processing time: 2-8 seconds
+- Rate limit: ~30 requests per minute
+- Max file size: 6MB
+- No caching (API is stateless and ephemeral)
+
+# Mental Model
+This API is STATELESS and EPHEMERAL:
+- NO storage: Images are never saved
+- NO caching: Don't cache responses
+- NO permanent URLs: No image persistence
+- Synchronous: Get immediate binary response
+
+# Implementation Checklist
+- [ ] Validate file size (6MB max) before upload
+- [ ] Validate file type (JPG/PNG/WebP only)
+- [ ] Use JSON.stringify() for frequency parameter
+- [ ] Include Authorization Bearer token
+- [ ] Handle blob response correctly (not JSON)
+- [ ] Implement error handling for all status codes
+- [ ] Show loading state (2-8 seconds)
+- [ ] Cleanup object URLs (prevent memory leaks)
+- [ ] Use NotoSansThai for Thai text
+- [ ] Implement rate limit retry with exponential backoff
+- [ ] Show character counter (200 max)
+- [ ] Display helpful validation messages
+
+Build a complete watermark upload component with form validation, loading states, error handling, and preview functionality following these requirements exactly.
+```
+
+---
+
 ## Support
 
 For issues or questions:

@@ -201,8 +201,15 @@ The following fonts are bundled with the API:
 - Size limit enforcement
 - No file persistence (ephemeral processing only)
 
+## ⚠️ Implementation Status
+
+**Current Status:** Stub implementation deployed. See [IMPLEMENTATION-STATUS.md](./IMPLEMENTATION-STATUS.md) for implementation checklist.
+
+The infrastructure is ready, but the actual watermark processing code needs to be implemented following [IMPLEMENTATION.md](./IMPLEMENTATION.md).
+
 ## Documentation
 
+- [Implementation Status](./IMPLEMENTATION-STATUS.md) - Current status and TODO list
 - [Detailed API Guide](./API-GUIDE.md) - Usage examples and best practices
 - [Implementation Guide](./IMPLEMENTATION.md) - Setup and deployment
 - [OpenAPI Specification](./%20.yaml) - Complete API schema

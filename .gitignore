@@ -15,6 +15,9 @@ dist/
 build/
 .netlify/
 
+# Keep public directory
+!public/
+
 # TypeScript
 *.tsbuildinfo
 

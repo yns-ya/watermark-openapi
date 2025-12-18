@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 48px;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        .tagline {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+        .status {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 32px;
+        }
+        .status strong {
+            color: #856404;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        .endpoint strong {
+            color: #667eea;
+        }
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .features {
+            text-align: left;
+            margin: 24px 0;
+        }
+        .features ul {
+            list-style: none;
+        }
+        .features li {
+            padding: 8px 0;
+            color: #495057;
+        }
+        .features li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Watermark API</h1>
+        <p class="tagline">Stateless image watermarking service</p>
+
+        <div class="status">
+            <strong>⚠️ Implementation Status:</strong> Infrastructure deployed, awaiting code implementation
+        </div>
+
+        <div class="endpoint">
+            <strong>POST</strong> https://silly-seahorse-49d00d.netlify.app/.netlify/functions/watermark
+        </div>
+
+        <div class="features">
+            <p><strong>Features:</strong></p>
+            <ul>
+                <li>Text and image watermarks</li>
+                <li>Multiple placement modes</li>
+                <li>Zero storage (ephemeral processing)</li>
+                <li>JWT authentication</li>
+                <li>Thai language support</li>
+            </ul>
+        </div>
+
+        <div class="links">
+            <a href="https://github.com/yns-ya/watermark-openapi/blob/main/API-DOCS.md" class="btn" target="_blank">
+                📖 API Documentation
+            </a>
+            <a href="https://github.com/yns-ya/watermark-openapi/blob/main/FRONTEND-INTEGRATION.md" class="btn btn-secondary" target="_blank">
+                💻 Frontend Integration Guide
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><strong>Platform:</strong> Netlify Functions | <strong>Auth:</strong> JWT Bearer Token</p>
+            <p style="margin-top: 8px;">
+                <small>See <a href="https://github.com/yns-ya/watermark-openapi" target="_blank">GitHub repository</a> for complete documentation</small>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

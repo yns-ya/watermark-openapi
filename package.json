@@ -47,8 +47,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/watermark-api.git"
+    "url": "git+https://github.com/yns-ya/watermark-openapi.git"
   },
   "license": "MIT",
-  "author": "Your Name"
+  "author": "yns-ya"
 }

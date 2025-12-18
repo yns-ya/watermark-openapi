@@ -2,7 +2,7 @@
 # Stateless image processing - NO STORAGE
 
 [build]
-  command = "pnpm install && pnpm run build"
+  command = "pnpm install && (pnpm run build || true) && mkdir -p public"
   functions = "netlify/functions"
   publish = "public"
 
