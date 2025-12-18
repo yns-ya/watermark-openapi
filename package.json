@@ -1,0 +1,54 @@
+{
+  "name": "watermark-api",
+  "version": "1.0.0",
+  "description": "Stateless image watermarking API for Netlify Functions - no storage, ephemeral processing only",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "netlify dev",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint netlify/functions --ext .ts",
+    "test": "echo \"Add tests here\" && exit 0",
+    "deploy": "netlify deploy --prod",
+    "deploy:preview": "netlify deploy",
+    "generate-jwt": "node scripts/generate-token.js",
+    "setup": "pnpm install && mkdir -p netlify/functions/watermark/assets/fonts"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5",
+    "busboy": "^1.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.8.1",
+    "@types/node": "^20.14.0",
+    "@types/busboy": "^1.5.4",
+    "@types/jsonwebtoken": "^9.0.6",
+    "typescript": "^5.5.4",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "watermark",
+    "image-processing",
+    "serverless",
+    "netlify",
+    "sharp",
+    "stateless",
+    "ephemeral"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/watermark-api.git"
+  },
+  "license": "MIT",
+  "author": "Your Name"
+}

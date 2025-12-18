@@ -1,0 +1,61 @@
+# Netlify Configuration for Watermark API
+# Stateless image processing - NO STORAGE
+
+[build]
+  command = "pnpm install && pnpm run build"
+  functions = "netlify/functions"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--version" # Disable npm
+  PNPM_VERSION = "9.0.0"
+
+[functions]
+  # Use esbuild for faster builds and smaller bundles
+  node_bundler = "esbuild"
+
+  # External node modules (bundled but not tree-shaken)
+  external_node_modules = ["sharp"]
+
+# Function-specific settings
+[functions.watermark]
+  # Max execution time for Free tier
+  timeout = 10
+
+  # Memory allocation
+  memory = 1024
+
+# Redirects for cleaner URLs (optional)
+[[redirects]]
+  from = "/api/watermark"
+  to = "/.netlify/functions/watermark"
+  status = 200
+  force = false
+
+# Security headers
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache control for function responses
+# NOTE: Actual Cache-Control is set in function code
+[[headers]]
+  for = "/.netlify/functions/watermark"
+  [headers.values]
+    # These are fallback headers
+    # Function response headers take precedence
+    Cache-Control = "no-store, no-cache, must-revalidate"
+    Pragma = "no-cache"
+
+# Development settings
+[dev]
+  command = "npm run dev"
+  port = 8888
+  targetPort = 8888
+  autoLaunch = false
