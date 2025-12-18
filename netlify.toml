@@ -35,20 +35,13 @@
   MAX_IMAGE_WIDTH = "4096"
   MAX_IMAGE_HEIGHT = "4096"
 
+# Redirect all calls to the watermark function (Monolith style)
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/*"
+  to = "/.netlify/functions/watermark"
   status = 200
 
 [dev]
-  command = "pnpm start:dev"
-  port = 3000
+  port = 8888
   publish = "public"
   autoLaunch = false
-
-# Environment variables (set in Netlify UI)
-# JWT_SECRET=your-secret-key
-# ALLOWED_ORIGINS=https://yourdomain.com
-# MAX_FILE_SIZE=6291456
-# MAX_IMAGE_WIDTH=4096
-# MAX_IMAGE_HEIGHT=4096

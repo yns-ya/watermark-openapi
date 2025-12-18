@@ -27,11 +27,11 @@ export enum OutputFormat {
 
 export class CreateWatermarkDto {
   @IsEnum(WatermarkType)
-  type: WatermarkType;
+  type!: WatermarkType;
 
   @ValidateNested()
   @Type(() => FrequencyDto)
-  frequency: FrequencyDto;
+  frequency!: FrequencyDto;
 
   // Text watermark fields
   @ValidateIf((o) => o.type === WatermarkType.TEXT)

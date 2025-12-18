@@ -5,7 +5,7 @@
  * but work without NestJS decorators/runtime for serverless deployment.
  */
 
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import { join } from 'path';
 import { readFileSync } from 'fs';
 import { CreateWatermarkDto, WatermarkType } from '../modules/watermark/dto/watermark.dto';
@@ -154,11 +154,12 @@ export class StandaloneImageProcessorService {
     imageWidth: number,
     imageHeight: number
   ): Promise<Buffer> {
-    if (!dto.wm_image_buffer) {
+    const wmImageBuffer = (dto as any).wm_image_buffer;
+    if (!wmImageBuffer) {
       throw new Error('Watermark image is required');
     }
 
-    const wmImage = sharp(dto.wm_image_buffer);
+    const wmImage = sharp(wmImageBuffer);
     const wmMetadata = await wmImage.metadata();
 
     if (!wmMetadata.width || !wmMetadata.height) {
@@ -223,10 +224,14 @@ export class StandaloneImageProcessorService {
   ): Array<{ top: number; left: number }> {
     const positions: Record<string, { top: number; left: number }> = {
       'top-left': { top: 20, left: 20 },
+      'top-center': { top: 20, left: Math.floor(width / 2) - 60 },
       'top-right': { top: 20, left: width - 120 },
-      'bottom-left': { top: height - 60, left: 20 },
-      'bottom-right': { top: height - 60, left: width - 120 },
+      'center-left': { top: Math.floor(height / 2) - 30, left: 20 },
       'center': { top: Math.floor(height / 2) - 30, left: Math.floor(width / 2) - 60 },
+      'center-right': { top: Math.floor(height / 2) - 30, left: width - 120 },
+      'bottom-left': { top: height - 60, left: 20 },
+      'bottom-center': { top: height - 60, left: Math.floor(width / 2) - 60 },
+      'bottom-right': { top: height - 60, left: width - 120 },
     };
     return [positions[position] || positions.center];
   }
@@ -356,7 +361,7 @@ export class StandaloneWatermarkService {
       throw new Error('Text is required for text watermark');
     }
 
-    if (dto.type === WatermarkType.IMAGE && !dto.wm_image_buffer) {
+    if (dto.type === WatermarkType.IMAGE && !(dto as any).wm_image_buffer) {
       throw new Error('Watermark image is required for image watermark');
     }
 
