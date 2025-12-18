@@ -1,0 +1,36 @@
+Title: Netlify build hardening + AI Prompt integration on index.html
+
+Summary:
+- Netlify build: switch back to frozen installs (pnpm install). Requires a clean, committed pnpm-lock.yaml.
+- Previously unblocked Netlify by using --no-frozen-lockfile; now reverting to frozen for deterministic CI.
+- Integration UX:
+  - Added AI Assistant Prompt section to index.html with a Copy Prompt button.
+  - Copy loads full prompt from public/assets/ai_prompt.txt while showing a short hint in the code block.
+  - Updated API endpoint on index.html to live Netlify function URL.
+  - Removed separate integration.html to keep a single landing/integration page.
+- Repo hygiene: kept minimal docs and .netlifyignore to reduce bundle size.
+
+Deployment/Operations Notes:
+- Ensure pnpm-lock.yaml is freshly regenerated and committed before deploying:
+  1) pnpm install --no-frozen-lockfile
+  2) git add pnpm-lock.yaml
+  3) git commit -m "Fix: regenerate pnpm-lock.yaml"
+  4) git push
+- Then Netlify frozen installs will succeed with the updated lockfile.
+
+Files changed:
+- netlify.toml: build.command -> pnpm install (frozen)
+- public/index.html: add AI Prompt section + Copy logic, update endpoint to Netlify URL
+- public/assets/ai_prompt.txt: added with full prompt content
+- .netlifyignore: reduce upload size (retain README.md, DEPLOYMENT.md, SECURITY.md)
+- Removed public/integration.html
+
+Test plan:
+- Netlify build passes on frozen install with updated pnpm-lock.yaml.
+- On index.html:
+  - Copy Prompt copies the full AI text from /assets/ai_prompt.txt
+  - API endpoint shown is the Netlify function URL
+
+Rollback:
+- If needed, set build.command back to "pnpm install --no-frozen-lockfile".
+- Restore integration.html if you prefer a separate page.

@@ -107,7 +107,7 @@
                 </h2>
                 <div class="bg-slate-900/50 rounded-xl p-4 mb-4 font-mono text-sm overflow-x-auto border border-purple-500/30">
                     <div class="text-purple-400 mb-2">POST</div>
-                    <div class="text-gray-300 break-all">http://localhost:3000/api/watermark</div>
+                    <div class="text-gray-300 break-all">https://silly-seahorse-49d00d.netlify.app/.netlify/functions/watermark</div>
                 </div>
                 <div class="space-y-3 text-gray-300">
                     <div class="flex items-center">
@@ -215,6 +215,15 @@
             </div>
         </div>
 
+        <!-- AI Prompt Section -->
+        <section class="glass rounded-3xl p-8 mb-12">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold">AI Assistant Prompt</h2>
+                <button id="btn-copy-ai" class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30">Copy Prompt</button>
+            </div>
+            <pre class="bg-slate-900/50 rounded-xl p-4 text-sm overflow-x-auto border border-purple-500/30"><code id="ai-prompt-hint">Copy this text and use it as an AI prompt to instruct an AI to integrate a frontend application with the Watermark API.</code></pre>
+        </section>
+
         <!-- CTA Buttons -->
         <div class="flex flex-wrap justify-center gap-6 mb-12">
             <a href="#" onclick="return false;"
@@ -279,6 +288,28 @@
                 © 2025 Watermark API • <a href="https://github.com/yns-ya/watermark-openapi" class="hover:text-purple-400 transition-colors">Open Source</a>
             </div>
         </footer>
-    </div>
+        <script>
+           (function(){
+             // Load the full AI prompt text from assets
+             fetch('/assets/ai_prompt.txt')
+               .then(r => r.text())
+               .then(t => { window.__aiPromptText = t; })
+               .catch(err => console.error('Failed to load AI prompt:', err));
+
+             // Copy handler
+             const btn = document.getElementById('btn-copy-ai');
+             if (btn) {
+               btn.addEventListener('click', function(){
+                 const text = window.__aiPromptText || document.getElementById('ai-prompt-hint').textContent;
+                 navigator.clipboard.writeText(text).then(() => {
+                   const original = btn.textContent;
+                   btn.textContent = 'Copied!';
+                   setTimeout(() => btn.textContent = original, 1500);
+                 }).catch(() => alert('Failed to copy'));
+               });
+             }
+           })();
+       </script>
+   </div>
 </body>
 </html>

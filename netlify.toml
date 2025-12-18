@@ -1,6 +1,6 @@
 [build]
-  # Regenerate lockfile on CI if needed to avoid ERR_PNPM_LOCKFILE_MISSING_DEPENDENCY
-  command = "pnpm install --no-frozen-lockfile"
+  # Frozen install (requires clean, committed pnpm-lock.yaml)
+  command = "pnpm install"
   publish = "public"
   functions = "netlify/functions"
 
