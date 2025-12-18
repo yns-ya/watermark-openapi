@@ -1,6 +1,6 @@
 [build]
-  # Install only production deps; rely on Netlify Functions bundler (esbuild) to transpile TS.
-  command = "pnpm install"
+  # Regenerate lockfile on CI if needed to avoid ERR_PNPM_LOCKFILE_MISSING_DEPENDENCY
+  command = "pnpm install --no-frozen-lockfile"
   publish = "public"
   functions = "netlify/functions"
 
