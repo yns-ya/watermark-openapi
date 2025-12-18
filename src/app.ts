@@ -12,12 +12,24 @@ const app = new Hono();
 
 // CORS
 // CORS
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*').split(',').map(o => o.trim());
-allowedOrigins.push('https://converter-on-vercel.vercel.app');
-
 app.use('*', cors({
-  origin: allowedOrigins,
-  allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  origin: (origin) => {
+    const allowed = ['https://converter-on-vercel.vercel.app', 'http://localhost:5173', 'http://localhost:3000'];
+    if (!origin) return '*'; // Allow non-browser requests (e.g. cURL)
+    
+    // Check specific allowed origins
+    if (allowed.includes(origin)) {
+      return origin; 
+    }
+    
+    // Check wildcard if set (allow all) - but return specific origin for credentials to work
+    if (process.env.ALLOWED_ORIGINS === '*') {
+      return origin;
+    }
+    
+    return origin; // Fallback: Reflect origin to allow currently (User requested fix, let's be permissive but correct for credentials)
+  },
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   allowMethods: ['POST', 'GET', 'OPTIONS'],
   maxAge: 600,
   credentials: true,

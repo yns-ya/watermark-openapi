@@ -4,6 +4,12 @@
   "description": "Stateless serverless image watermarking API (Netlify Functions) - no storage, ephemeral processing only",
   "private": true,
   "packageManager": "pnpm@9.0.0",
+  "pnpm": {
+    "supportedArchitectures": {
+      "os": ["darwin", "linux"],
+      "cpu": ["x64", "arm64"]
+    }
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prebuild": "rimraf dist",
